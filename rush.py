@@ -15,44 +15,56 @@ check_timeout = 0.2
 base_server = 'gdjwgl.bjut.edu.cn'
 # base_server = '172.21.96.63'
 # base_server = '172.21.96.64'
+# WARNING: 172.21.96.64 has different data format, packages must be analysed again.
 
 def login(session):
     h_url = 'http://' + base_server + '/default4.aspx'
     h_head = {
+        'Referer': h_url,
         'Content-Type': 'application/x-www-form-urlencoded'
     }
-    h_data = '__VIEWSTATE=dDwxMTE4MjQwNDc1Ozs%2BkCoSUKMXG5ZXBP2D2Ow9ni8sipk%3D&TextBox1=' \
+    if base_server == '172.21.96.64':
+        h_data_pre='__VIEWSTATE=dDwxMTE4MjQwNDc1Ozs%2BNI1aU2Y56Kg3%2F1WYt8y%2B45omFEc%3D&TextBox1='
+    else:
+        h_data_pre='__VIEWSTATE=dDwxMTE4MjQwNDc1Ozs%2BkCoSUKMXG5ZXBP2D2Ow9ni8sipk%3D&TextBox1='
+    h_data = h_data_pre \
              + userinfo.usr + '&TextBox2=' \
              + userinfo.pwd + '&RadioButtonList1=%D1%A7%C9%FA&Button1=+%B5%C7+%C2%BC+'
 
     str_success = '<html><head><title>Object moved</title></head><body>'
 
     try:
-        r = session.post(h_url, data=h_data, headers=h_head, timeout=login_timeout)
+        r = session.get(h_url)
+        r = session.post(h_url, data=h_data, headers=h_head, timeout=login_timeout, allow_redirects=False)
+        if r.text[:52] == str_success:
+            return 1
+        else:
+            print("Response wrong.")
+            return 0
     except:
         # timeout, login failed.
+        print("Timeout, login failed.")
         return 0
-    if r.text[:52] == str_success:
-        return 1
-    else:
-        return 0
-        # print(session.cookies.items())
 
 
 def check_session(session):
     print('Checking session...')
     try:
         r = session.get('http://' + base_server + '/content.aspx', timeout=check_timeout)
+        s_start = r.text.index('<title>') + 7
+        s_end = r.text.index('</title>')
+        print(r.text[s_start:s_end])
+        if r.text[s_start:s_end] == '正方教务管理系统':
+            print('Session valid, continue.')
+            return 1
+        else:
+            # if not right response, needs login again
+            print('Session expired, login.')
+            return 0
     except:
         # timeout, ignore state
         print('Time out, ignore state.')
         return 1
-    if r.status_code == 200:
-        print('Session valid, continue.')
-        return 1
-    # if not 200 response, needs login again
-    print('Session expired, login.')
-    return 0
 
 
 def get_course(session, data, h_url):
@@ -68,6 +80,7 @@ def get_course(session, data, h_url):
             s_end = r.text.index("');</script>")
             print(r.text[37:s_end])
         except:
+            print('Failed to get status')
             pass
     else:
         # fuck the server anyway

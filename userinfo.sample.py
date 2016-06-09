@@ -1,0 +1,2 @@
+usr = "studentID"
+pwd = "password"

@@ -62,9 +62,9 @@ def get_course(session, data, h_url):
         'Pragma': 'no-cache',
     }
     if halal:
-        r = session.post(h_url, data=data, headers=h_head)
-        # display message
         try:
+            r = session.post(h_url, data=data, headers=h_head)
+            # display message
             s_end = r.text.index("');</script>")
             print(r.text[37:s_end])
         except:

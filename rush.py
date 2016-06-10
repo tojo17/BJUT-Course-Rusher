@@ -34,7 +34,7 @@ def login(session):
     str_success = '<html><head><title>Object moved</title></head><body>'
 
     try:
-        r = session.get(h_url)
+        r = session.get(h_url, timeout=login_timeout)
         r = session.post(h_url, data=h_data, headers=h_head, timeout=login_timeout, allow_redirects=False)
         if r.text[:52] == str_success:
             return 1
@@ -75,7 +75,7 @@ def get_course(session, data, h_url):
     }
     if halal:
         try:
-            r = session.post(h_url, data=data, headers=h_head)
+            r = session.post(h_url, data=data, headers=h_head, timeout=5)
             # display message
             s_end = r.text.index("');</script>")
             print(r.text[37:s_end])

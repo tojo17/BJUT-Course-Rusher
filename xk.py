@@ -147,14 +147,14 @@ if __name__ == '__main__':
     name = get_name(s, userinfo.usr)
     print(userinfo.usr, name)
     viewstate = get_viewstate(s, userinfo.usr, name)
-    todo_cousre = course.course
+    todo_course = course.course
     count = 0
     while 1:
         count += 1
         print('-------------Loop', count)
-        for cur_course in todo_cousre:
+        for cur_course in todo_course:
             print('Trying to get', cur_course[0], cur_course[1])
             result = sel_course(s, cur_course[0], cur_course[1], viewstate, userinfo.usr, name)
             print(result)
             if result == 'Successfully selected!':
-                todo_cousre.remove(cur_course)
+                todo_course.remove(cur_course)

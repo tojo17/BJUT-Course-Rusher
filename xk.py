@@ -79,8 +79,8 @@ def get_viewstate(session, username, name):
     h_url = 'http://' + base_url + '/xf_xsqxxxk.aspx'
     h_params = {
         'xh': username,
-        'xm': name.encode('gb2312'),
-        'gnmkdm': 'N121113'
+        'xm': name.encode('gb18030'),
+        'gnmkdm': 'N121101'
     }
     r = retry_get(30, session, h_url, params=h_params)
     p = re.compile(r'<input type=\"hidden\" name=\"__VIEWSTATE\" value=\".+?\" />')
@@ -92,8 +92,8 @@ def sel_course(session, course_name, course_number, viewstate, username, name):
     h_url = 'http://' + base_url + '/xf_xsqxxxk.aspx'
     h_params = {
         'xh': username,
-        'xm': name.encode('gb2312'),
-        'gnmkdm': 'N121113'
+        'xm': name.encode('gb18030'),
+        'gnmkdm': 'N121101'
     }
     h_head = {
         'Content-Type': 'application/x-www-form-urlencoded'
@@ -145,7 +145,12 @@ def sel_course(session, course_name, course_number, viewstate, username, name):
 if __name__ == '__main__':
     s = login(userinfo.usr, userinfo.pwd)
     name = get_name(s, userinfo.usr)
-    print(userinfo.usr, name)
+    try:
+    	print(userinfo.usr, name)
+    except:
+    	# if name contains chars beyond gbk, just won't display
+    	print(userinfo.usr, name.encode('utf-8'))
+    sys.stdout.flush()
     viewstate = get_viewstate(s, userinfo.usr, name)
     todo_course = course.course
     count = 0

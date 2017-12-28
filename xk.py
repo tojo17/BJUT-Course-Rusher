@@ -4,9 +4,11 @@ import re
 import sys
 import userinfo
 import course
+import time
 
 timeout = 1
 base_url = 'gdjwgl.bjut.edu.cn'
+wait_time = 0.1
 
 
 def retry_post(retry, session, h_url, **kwargs):
@@ -158,3 +160,4 @@ if __name__ == '__main__':
             print(result)
             if result == 'Successfully selected!':
                 todo_course.remove(cur_course)
+        time.sleep(wait_time)
